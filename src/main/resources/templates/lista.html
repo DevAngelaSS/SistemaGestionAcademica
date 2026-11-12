@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión Académica - Estudiantes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f9; color: #222; }
+        header { background: #1f3a5f; color: #fff; padding: 16px 32px; }
+        main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+        .barra { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .barra form { display: flex; gap: 8px; flex: 1; }
+        .barra input[type=text] { flex: 1; padding: 8px; border: 1px solid #bbb; border-radius: 4px; }
+        .boton { padding: 8px 14px; border: none; border-radius: 4px; background: #1f3a5f; color: #fff; text-decoration: none; cursor: pointer; font-size: 14px; }
+        .boton.secundario { background: #6c757d; }
+        .boton.peligro { background: #b02a37; }
+        .boton.editar { background: #c77d0a; }
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { padding: 10px; border-bottom: 1px solid #e1e4e8; text-align: left; font-size: 14px; }
+        th { background: #e9edf2; }
+        .alerta { padding: 10px 14px; border-radius: 4px; margin-bottom: 16px; }
+        .exito { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .vacio { text-align: center; padding: 24px; color: #666; }
+        .acciones { display: flex; gap: 6px; }
+        .acciones form { margin: 0; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Sistema de Gestión Académica Universitaria</h1>
+</header>
+<main>
+    <div th:if="${mensajeExito}" class="alerta exito" th:text="${mensajeExito}"></div>
+    <div th:if="${mensajeError}" class="alerta error" th:text="${mensajeError}"></div>
+
+    <div class="barra">
+        <form th:action="@{/estudiantes}" method="get">
+            <input type="text" name="texto" th:value="${texto}" placeholder="Buscar por código, nombres, apellidos, correo o carrera">
+            <button type="submit" class="boton">Buscar</button>
+            <a th:href="@{/estudiantes}" class="boton secundario">Limpiar</a>
+        </form>
+        <a th:href="@{/estudiantes/nuevo}" class="boton">Registrar estudiante</a>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Correo</th>
+            <th>Carrera</th>
+            <th>Semestre</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="estudiante : ${estudiantes}">
+            <td th:text="${estudiante.codigo}"></td>
+            <td th:text="${estudiante.nombres}"></td>
+            <td th:text="${estudiante.apellidos}"></td>
+            <td th:text="${estudiante.correo}"></td>
+            <td th:text="${estudiante.carrera}"></td>
+            <td th:text="${estudiante.semestre}"></td>
+            <td>
+                <div class="acciones">
+                    <a th:href="@{/estudiantes/{id}/editar(id=${estudiante.id})}" class="boton editar">Editar</a>
+                    <form th:action="@{/estudiantes/{id}/eliminar(id=${estudiante.id})}" method="post"
+                          onsubmit="return confirm('¿Desea eliminar a este estudiante?');">
+                        <button type="submit" class="boton peligro">Eliminar</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(estudiantes)}">
+            <td colspan="7" class="vacio">No se encontraron estudiantes</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>
